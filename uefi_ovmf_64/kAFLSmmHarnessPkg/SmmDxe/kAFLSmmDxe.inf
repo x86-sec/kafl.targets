@@ -1,0 +1,43 @@
+## @file
+#  Implements SMM side of a fuzzing harness
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = kAFLSmmDxe
+  FILE_GUID                      = c94d7d42-e324-4a68-ac06-50335c029c2a
+  MODULE_TYPE                    = DXE_SMM_DRIVER
+  PI_SPECIFICATION_VERSION       = 0x0001000A
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = InitializekAFLSmmDxe
+
+[Sources]
+  kAFLSmmDxe.c
+  kAFLSmmDxe.h
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  kAFLSmmHarnessPkg/kAFLSmmHarnessPkg.dec
+  kAFLAgentPkg/kAFLAgentPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  UefiDriverEntryPoint
+  DebugLib
+  MmServicesTableLib
+  BmpSupportLib
+  MemoryAllocationLib
+  CpuExceptionHandlerLib
+# kAFLAgentLib
+  kAFLSmmTargetLib
+
+[Guids]
+  ## CONSUMES ## GUID # Locate protocol
+  ## CONSUMES ## GUID # Protocol notify
+  gkAFLSmmGuid
+
+[Depex]
+  TRUE

@@ -1,0 +1,45 @@
+## @file
+#  Implements non SMM side of a fuzzing harness
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = kAFLDxe
+  FILE_GUID                      = c94d7d42-f325-4a69-ac06-50334c029c2a
+  MODULE_TYPE                    = DXE_RUNTIME_DRIVER
+  PI_SPECIFICATION_VERSION       = 0x0001000A
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = InitializekAFLDxe
+
+[Sources]
+  kAFLDxe.c
+  kAFLDxe.h
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  kAFLSmmHarnessPkg/kAFLSmmHarnessPkg.dec
+  kAFLAgentPkg/kAFLAgentPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  MemoryAllocationLib
+  UefiDriverEntryPoint
+  DebugLib
+  MmUnblockMemoryLib
+  UefiBootServicesTableLib
+  kAFLAgentLib
+
+[Protocols]
+  gEfiMmCommunication2ProtocolGuid              ## CONSUMES
+  gEfikAFLDxeProtocolGuid                       ## PRODUCES
+
+[Guids]
+  ## CONSUMES ## GUID # Locate protocol
+  ## CONSUMES ## GUID # Protocol notify
+  gkAFLSmmGuid
+
+[Depex]
+  gEfiMmCommunication2ProtocolGuid
