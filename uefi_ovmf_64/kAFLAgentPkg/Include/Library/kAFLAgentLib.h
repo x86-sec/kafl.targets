@@ -90,13 +90,14 @@ RunTestHarness (
 #define HYPERCALL_KAFL_USER_ABORT			20
 #define HYPERCALL_KAFL_TIMEOUT				21
 
-#define PAYLOAD_SIZE						(128 << 10)				/* up to 128KB payloads */
+#define PAYLOAD_SIZE						(128 << 10)				/* up to 128KB payloads - header size*/
+#define PAYLOAD_DATA_SIZE				(PAYLOAD_SIZE-sizeof(int32_t)-sizeof(uint8_t))				/* real payload size */
 #define PROGRAM_SIZE						(128 << 20)				/* kAFL supports 128MB programm data */
 #define INFO_SIZE							(128 << 10)				/* 128KB info string */
 
 typedef struct{
 	int32_t size;
-	uint8_t data[PAYLOAD_SIZE-sizeof(int32_t)-sizeof(uint8_t)];
+	uint8_t data[PAYLOAD_DATA_SIZE];
 	uint8_t redqueen_mode;
 } kAFL_payload;
 
@@ -115,5 +116,8 @@ void kAFL_hypercall(uint32_t rbx, uint32_t rcx);
 #elif defined(__x86_64__)
 void kAFL_hypercall(uint64_t rbx, uint64_t rcx);
 #endif
+
+void agent_run(void);
+void agent_init(void *panic_handler, void *kasan_handler);
 
 #endif /* _KAFL_AGENT_LIB_H_ */

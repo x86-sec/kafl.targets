@@ -12,6 +12,7 @@
 #include  <Library/UefiLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Library/BaseMemoryLib.h>
+#include <Library/DebugLib.h>
 
 #include <Library/kAFLAgentLib.h>
 
@@ -43,11 +44,14 @@ void kAFL_hypercall(uint64_t rbx, uint64_t rcx)
 }
 #endif
 
+#ifndef KAFL_AGENT_EXTERNAL_AGENT_INIT
 void agent_init(void *panic_handler, void *kasan_handler)
 {
-	Print(L"Initiate fuzzer handshake...\n");
+  DebugPrint (DEBUG_INFO, "Initiate fuzzer handshake...\n");
 	
+  DebugPrint (DEBUG_INFO, "HYPERCALL_KAFL_ACQUIRE\n");
 	kAFL_hypercall(HYPERCALL_KAFL_ACQUIRE, 0);
+  DebugPrint (DEBUG_INFO, "HYPERCALL_KAFL_RELEASE\n");
 	kAFL_hypercall(HYPERCALL_KAFL_RELEASE, 0);
 
 	/* submit panic and optionally kasan handlers for qemu
@@ -61,13 +65,22 @@ void agent_init(void *panic_handler, void *kasan_handler)
 	}
 
 	/* target-specific initialization, if any */
+  DebugPrint (DEBUG_INFO, "Call InitTestHarness\n");
 	InitTestHarness();
 }
+#endif
 
+#ifndef KAFL_AGENT_EXTERNAL_AGENT_RUN
 void agent_run()
 {
-    uint8_t buffer[PAYLOAD_SIZE];
-    kAFL_payload* payload_buffer = (kAFL_payload*)buffer;
+    uint8_t buffer[PAYLOAD_SIZE + 0x1000];
+    uint8_t *b = &buffer[0];
+    DebugPrint (DEBUG_INFO, "before alignement %p\n", b);
+    long int a = (long int)b;
+    a = (a + 0x1000) & 0xfffffffffffff000L;
+    b = (void *)(long int *)a;
+    DebugPrint (DEBUG_INFO, "after alignement %p\n", b);
+    kAFL_payload* payload_buffer = (kAFL_payload*)b;
 
     kAFL_hypercall(HYPERCALL_KAFL_GET_PAYLOAD, (uint_ptr)payload_buffer);
     kAFL_hypercall(HYPERCALL_KAFL_SUBMIT_CR3, 0);
@@ -82,7 +95,9 @@ void agent_run()
     }
     return;
 }
+#endif
 
+#ifndef KAFL_AGENT_EXTERNAL_UEFI_MAIN
 EFI_STATUS
 EFIAPI
 UefiMain (
@@ -102,4 +117,4 @@ UefiMain (
 
 	return EFI_SUCCESS;
 }
-
+#endif
