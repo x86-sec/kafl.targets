@@ -63,7 +63,8 @@ KAFL_OPTS="--redqueen --hammer_jmp_tables --grimoire --catch_reset -v --log --de
 function install_edk2()
 {
 	# requirements on top of kAFL base install
-	sudo apt-get install nasm iasl g++ g++-multilib
+  # Adapt to pacman
+	# sudo apt-get install nasm iasl g++ g++-multilib
 	
 	# download + apply patch unless install folder already exists
 	if [ -d $KAFL_ROOT/edk2.git ]; then
@@ -72,7 +73,7 @@ function install_edk2()
 	else
 		git clone https://github.com/tianocore/edk2 $KAFL_ROOT/edk2.git
 		pushd $KAFL_ROOT/edk2.git
-		git checkout -b edk2-stable201905
+		git checkout -b edk2-stable202108
 		git submodule update --init --recursive
 		patch -p1 < $TARGET_ROOT/edk2_kafl.patch || exit
 		patch -p1 < $TARGET_ROOT/edk2_kafl_smm.patch || exit

@@ -1,19 +1,6 @@
 ## Automatic binary patch by kAFL does not work - inject manual hypercall here.
 ## Also remove the delay to launch the target binary via startup.nsh
 
-diff --git a/ShellPkg/Application/Shell/Shell.c b/ShellPkg/Application/Shell/Shell.c
-index d16adae0ea..f20b023969 100644
---- a/ShellPkg/Application/Shell/Shell.c
-+++ b/ShellPkg/Application/Shell/Shell.c
-@@ -923,7 +923,7 @@ ProcessCommandLine(
-   ShellInfoObject.ShellInitSettings.BitUnion.Bits.Delay        = FALSE;
-   ShellInfoObject.ShellInitSettings.BitUnion.Bits.Exit         = FALSE;
-   ShellInfoObject.ShellInitSettings.BitUnion.Bits.NoNest       = FALSE;
--  ShellInfoObject.ShellInitSettings.Delay = 5;
-+  ShellInfoObject.ShellInitSettings.Delay = 0;
- 
-   //
-   // Start LoopVar at 0 to parse only optional arguments at Argv[0]
 diff --git a/UefiCpuPkg/Library/CpuExceptionHandlerLib/Ia32/ArchExceptionHandler.c b/UefiCpuPkg/Library/CpuExceptionHandlerLib/Ia32/ArchExceptionHandler.c
 index 1aafb7dac1..cb3bdcc941 100644
 --- a/UefiCpuPkg/Library/CpuExceptionHandlerLib/Ia32/ArchExceptionHandler.c
@@ -83,3 +70,16 @@ index 894c1cfb75..409116bcf2 100644
 +  kAFL_hypercall(HYPERCALL_KAFL_PANIC, 0);
 +
  }
+diff --git a/ShellPkg/Application/Shell/Shell.c b/ShellPkg/Application/Shell/Shell.c
+index df00adfdfa..b91ec42e41 100644
+--- a/ShellPkg/Application/Shell/Shell.c
++++ b/ShellPkg/Application/Shell/Shell.c
+@@ -990,7 +990,7 @@ ProcessCommandLine (
+   ShellInfoObject.ShellInitSettings.BitUnion.Bits.Delay        = FALSE;
+   ShellInfoObject.ShellInitSettings.BitUnion.Bits.Exit         = FALSE;
+   ShellInfoObject.ShellInitSettings.BitUnion.Bits.NoNest       = FALSE;
+-  ShellInfoObject.ShellInitSettings.Delay                      = 5;
++  ShellInfoObject.ShellInitSettings.Delay                      = 0;
+ 
+   //
+   // Start LoopVar at 0 to parse only optional arguments at Argv[0]
